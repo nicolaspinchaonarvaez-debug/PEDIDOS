@@ -34,7 +34,17 @@
   // Forzar apertura directa agregando ?directo al enlace
   var directo = location.search.indexOf("directo") >= 0;
 
-  if (esIOS || esSafari || directo) {
+  var instalada = window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  if ((esIOS || esSafari) && !instalada && !directo) {
+    // iPhone en Safari: pantalla de bienvenida para poder instalar con el logo antes de abrir.
+    document.getElementById("splash").innerHTML =
+      '<div style="text-align:center;padding:24px;max-width:340px">' +
+      '<img src="icon-512.png" alt="Carnes La Ermita">' +
+      '<div style="font-size:20px;font-weight:700;color:#1B1415;margin-bottom:6px">Pedidos La Ermita</div>' +
+      '<a href="' + EXEC + '" style="display:inline-block;background:#B3161E;color:#fff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:14px;margin:10px 0 22px">Abrir pedidos</a>' +
+      '<div style="font-size:14px;line-height:1.5;color:#7B6F70">Para instalarla en este iPhone: toca <b>Compartir</b> ' +
+      '<span style="display:inline-block;border:1.5px solid #7B6F70;border-radius:4px;padding:0 4px">&#8679;</span> abajo y elige <b>Agregar a inicio</b>.</div></div>';
+  } else if (esIOS || esSafari || directo) {
     // Safari bloquea que Google se abra dentro de otra página (error 401), así que se abre directo.
     location.replace(EXEC);
   } else {
