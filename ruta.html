@@ -82,6 +82,16 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
   var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
              set: function (k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} } };
   var ses = null; try { ses = JSON.parse(ls.get("ermita-ruta") || "null"); } catch (e) {}
+  // Llega desde la app de pedidos ya con la sesión: no hay que volver a ingresar.
+  (function () {
+    var m = location.hash.match(/[#&]s=([\w-]+)/); if (!m) return;
+    try {
+      var t = m[1].replace(/-/g, "+").replace(/_/g, "/"); while (t.length % 4) t += "=";
+      var o = JSON.parse(decodeURIComponent(escape(atob(t))));
+      if (o && o.token && o.yo) { ses = o; ls.set("ermita-ruta", JSON.stringify(ses)); ls.set("ermita-modo", "ruta"); }
+    } catch (e) {}
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  })();
   var pedidos = [], cargando = false, msgErr = "", confirmar = null;
   var activo = ls.get("ermita-ruta-activo") === "1", watchId = null, ultimaPos = null, enviada = { t: 0, lat: 0, lng: 0 }, enviando = false, geoErr = "", wake = null;
   var esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
