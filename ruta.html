@@ -12,56 +12,71 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pedidos Ermita">
 <style>
-:root{--bg:#F4F2F2;--surface:#fff;--ink:#1F1A1B;--muted:#6E6466;--line:#E2DCDC;--accent:#B3161E;--accent-d:#8E1B26;--soft:#F6E3E4;--ok:#1E7A46;--ok-bg:#E3F3E9;--ruta:#7A4A0E;--ruta-bg:#FDF0DC;--warn:#8A5A00}
-@media (prefers-color-scheme:dark){:root{--bg:#141112;--surface:#1F1B1C;--ink:#F2ECEC;--muted:#A99EA0;--line:#352E30;--soft:#3A1E21;--ok:#6FD39A;--ok-bg:#16301F;--ruta:#F2C27A;--ruta-bg:#3A2A12;--warn:#F2C27A}}
+:root{--bg:#F6F4F4;--surface:#fff;--ink:#1A1516;--muted:#857B7D;--line:#ECE7E7;--accent:#B3161E;--soft:#FBEDEE;--ok:#16794A;--ok-bg:#E4F4EA;--warn:#9A6500;--warn-bg:#FFF3DC}
+@media (prefers-color-scheme:dark){:root{--bg:#0F0D0D;--surface:#1A1718;--ink:#F3EEEE;--muted:#9D9294;--line:#2A2526;--soft:#35191C;--ok:#5CCB8E;--ok-bg:#132A1D;--warn:#F0C066;--warn-bg:#33270F}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
-header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:10px}
-header img{width:40px;height:40px;object-fit:contain}
-header .t{flex:1;min-width:0}
-header b{display:block;font-size:1.05rem}
-header span{display:block;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-main{max-width:560px;margin:0 auto;padding:14px 16px;display:grid;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px;min-width:0}
-.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 .95rem system-ui,-apple-system,sans-serif;padding:11px 14px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:44px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-.btn.big{width:100%;font-size:1.05rem;padding:15px;border-radius:14px}
-.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:0 18px;display:grid;gap:12px}
+.hd{max-width:520px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 8px;display:flex;align-items:center;gap:12px}
+.hd img{width:38px;height:38px;object-fit:contain}
+.hd .t{flex:1;min-width:0}
+.hd b{display:block;font-size:1.3rem;letter-spacing:-.01em}
+.hd span{display:block;font-size:.85rem;color:var(--muted)}
+.ic{appearance:none;border:0;background:var(--surface);color:var(--ink);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;cursor:pointer;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,.06);flex:none}
+.ic svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ic.go{background:var(--accent);color:#fff}
+.btn{appearance:none;border:0;background:var(--surface);color:var(--ink);font:600 .95rem system-ui,-apple-system,sans-serif;padding:12px 16px;border-radius:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:46px}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ok{background:#16794A;color:#fff}
+.btn.suave{background:var(--soft);color:var(--accent)}
+@media (prefers-color-scheme:dark){.btn.suave{color:#F2959A}.stop .n{color:#F2959A}.stop.ruta .n{color:#fff}}
+.btn.sm{min-height:38px;padding:8px 14px;font-size:.88rem;border-radius:12px}
+.btn.full{width:100%}
+.btn.ghost{background:none;color:var(--muted)}
+.btn.line{background:none;border:1.5px solid var(--line)}
 .btn:disabled{opacity:.6}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row .btn{flex:1}
-.copia{display:flex;gap:8px;margin-top:6px;flex-wrap:nowrap}
-.copia input{flex:1;min-width:0;font-size:14px;padding:10px}
-.copia .btn{flex:none}
-label.f{display:grid;gap:6px;font-size:.85rem;font-weight:600;color:var(--muted)}
-input{font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%}
-.login{max-width:380px;margin:8vh auto 0;text-align:center}
-.login img.m{width:220px;max-width:70%;margin:0 auto}
-.err{color:var(--accent);font-weight:600;font-size:.9rem;min-height:1.2em}
-.hero{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
-.hero img{width:96px}
-.hero .st b{display:block;font-size:1.1rem}
-.hero .st>span{display:block;font-size:.85rem;color:var(--muted)}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#aaa;margin-right:6px;vertical-align:1px}
-.on .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(30,122,70,.6);animation:pulso 1.6s infinite}
-@keyframes pulso{70%{box-shadow:0 0 0 10px rgba(30,122,70,0)}100%{box-shadow:0 0 0 0 rgba(30,122,70,0)}}
-.aviso{font-size:.82rem;color:var(--warn);background:var(--ruta-bg);border-radius:10px;padding:8px 10px}
-h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.ped{gap:8px}
-.ped .top{display:flex;align-items:flex-start;gap:8px}
-.ped .top b{flex:1;font-size:1.05rem}
-.badge{font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--line);color:var(--muted);white-space:nowrap}
-.badge.ruta{background:var(--ruta-bg);color:var(--ruta)}
-.badge.listo{background:var(--ok-bg);color:var(--ok)}
-.meta{font-size:.9rem;display:grid;gap:3px}
-.items{white-space:pre-line;font-size:.9rem;background:var(--bg);border-radius:10px;padding:8px 10px}
-.notas{white-space:pre-line;font-size:.88rem;border-left:3px solid var(--accent);padding:4px 10px;background:var(--soft);border-radius:0 8px 8px 0}
-.pago{font-size:.85rem;color:var(--muted)}
-.pago b.no{color:var(--accent)}
-.vacio{text-align:center;color:var(--muted);padding:20px 10px}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:#1F1A1B;color:#fff;padding:12px 14px;border-radius:12px;font-size:.92rem;text-align:center;z-index:20;max-width:520px;margin:0 auto}
+.gps{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:12px 12px 12px 16px}
+.gps .tx{flex:1;min-width:0;display:grid}
+.gps .tx b{font-size:.95rem}
+.gps .tx small{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:11px;height:11px;border-radius:50%;background:#C4BBBD;flex:none}
+.gps.on .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(22,121,74,.55);animation:pulso 1.8s infinite}
+@keyframes pulso{70%{box-shadow:0 0 0 10px rgba(22,121,74,0)}100%{box-shadow:0 0 0 0 rgba(22,121,74,0)}}
+.sec{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 4px -2px}
+.stop{background:var(--surface);border-radius:20px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:center}
+.stop .n{width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:800;display:grid;place-items:center;font-size:.95rem;align-self:start}
+.stop.ruta .n{background:var(--accent);color:#fff}
+.stop .info{min-width:0;display:grid;gap:3px}
+.stop .dir{font-size:1.08rem;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.stop .sub{font-size:.85rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.tag{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--warn-bg);color:var(--warn)}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.gris{background:var(--line);color:var(--muted)}
+.stop .acts{display:flex;gap:8px;align-self:start}
+.stop .pie{grid-column:1/-1;display:grid;gap:6px;margin-top:8px}
+.stop .pie .fila{display:flex;gap:8px}
+.stop .pie .fila .btn{flex:1}
+.vacio{text-align:center;color:var(--muted);padding:34px 10px 10px;display:grid;justify-items:center;gap:6px}
+.vacio img{width:170px;opacity:.95}
+.vacio b{color:var(--ink);font-size:1.05rem}
+.menu{background:var(--surface);border-radius:20px;padding:6px;display:grid}
+.menu>button,.menu>a{appearance:none;border:0;background:none;color:var(--ink);text-align:left;font:500 .95rem system-ui,sans-serif;padding:13px 12px;border-radius:12px;display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.menu>button+button,.menu>button+a,.menu>a+button{border-top:1px solid var(--line);border-radius:0}
+.menu .rojo{color:var(--accent)}
+.menu .det{padding:4px 12px 14px;font-size:.88rem;display:grid;gap:10px}
+.menu .det ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.copia{display:flex;gap:8px;margin-top:6px}
+.copia input{flex:1;min-width:0;font:14px system-ui;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.copia .btn{flex:none;min-height:40px;background:var(--bg)}
+.login{max-width:360px;margin:9vh auto 0;display:grid;gap:12px;text-align:center}
+.login img{width:190px;margin:0 auto}
+.login b{font-size:1.35rem}
+.login span{color:var(--muted);font-size:.92rem}
+.login form{display:grid;gap:10px;text-align:left;margin-top:6px}
+input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px;background:var(--surface);color:var(--ink);width:100%}
+.err{color:var(--accent);font-weight:600;font-size:.88rem;min-height:1.2em;text-align:center}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:#1A1516;color:#fff;padding:12px 14px;border-radius:14px;font-size:.92rem;text-align:center;z-index:20;max-width:480px;margin:0 auto}
 .mini{font-size:.8rem;color:var(--muted);text-align:center}
 .mini a{color:inherit}
 </style>
@@ -127,22 +142,29 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
     return /Failed to fetch|NetworkError|Load failed/i.test(m) ? "Sin conexión. Revisa los datos o el wifi." : "No se pudo completar (" + m.slice(0, 80) + ")."; }
 
   /* ---------- pantallas ---------- */
+  var IC = {
+    ir: '<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>',
+    tel: '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+    menu: '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>'
+  };
+  var menuAbierto = false;
   function pintar() {
     if (!ses) return pintarLogin();
     var r = $("#raiz"), y = window.scrollY;
-    r.innerHTML = '<header><img src="icon-192.png" alt=""><div class="t"><b>Domicilios</b><span>' + esc(ses.yo.nombre) + ' · Carnes La Ermita</span></div>' +
-      '<button class="btn ghost" data-a="salir">Salir</button></header><main>' + tarjetaRecorrido() + tarjetaFondo() + tarjetaAvisos() + listaPedidos() +
-      (ses.yo.rol === "admin" ? '<p class="mini"><a href="index.html?app" data-a="irApp">Ir a la app de pedidos</a></p>' : '') + '</main>';
+    var pend = pedidos.filter(function (p) { return p.estado === "ruta" || p.estado === "listo"; }).length;
+    r.innerHTML = '<header class="hd"><img src="icon-192.png" alt=""><div class="t"><b>Hola, ' + esc(ses.yo.nombre.split(" ")[0]) + '</b><span>' +
+      (pend ? pend + (pend === 1 ? " entrega pendiente" : " entregas pendientes") : "Domicilios · Carnes La Ermita") + '</span></div>' +
+      '<button class="ic" data-a="menu" aria-label="Opciones">' + IC.menu + '</button></header><main>' +
+      (menuAbierto ? tarjetaMenu() : '') + barraGps() + listaPedidos() + '</main>';
     window.scrollTo(0, y);
   }
   function pintarLogin(msg) {
-    $("#raiz").innerHTML = '<main><div class="card login"><img class="m" src="moto.webp" alt="Domiciliario de Carnes La Ermita">' +
-      '<b style="font-size:1.25rem">Modo domiciliario</b><span style="color:var(--muted);font-size:.9rem">Ingresa con tu usuario de domiciliario</span>' +
-      '<form id="flogin" class="card" style="border:0;padding:0;text-align:left">' +
-      '<label class="f">Usuario<input id="l-u" autocomplete="username" autocapitalize="none" required></label>' +
-      '<label class="f">PIN<input id="l-p" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" required></label>' +
-      '<div class="err" id="l-e">' + esc(msg || "") + '</div><button class="btn primary big" id="l-b">Ingresar</button></form></div>' +
-      '<p class="mini"><a href="' + EXEC + '?ping=1" target="_blank" rel="noopener">Probar conexión</a> · <a href="index.html?app">Volver a la app de pedidos</a></p></main>';
+    $("#raiz").innerHTML = '<main><div class="login"><img src="moto.webp" alt="Domiciliario de Carnes La Ermita">' +
+      '<b>Domicilios</b><span>Ingresa con tu usuario y PIN</span>' +
+      '<form id="flogin"><input class="campo" id="l-u" placeholder="Usuario" autocomplete="username" autocapitalize="none" required>' +
+      '<input class="campo" id="l-p" type="password" placeholder="PIN" inputmode="numeric" maxlength="8" autocomplete="current-password" required>' +
+      '<div class="err" id="l-e">' + esc(msg || "") + '</div><button class="btn primary full" id="l-b">Ingresar</button></form>' +
+      '<p class="mini"><a href="' + EXEC + '?ping=1" target="_blank" rel="noopener">Probar conexión</a> · <a href="index.html?app">App de pedidos</a></p></div></main>';
     $("#flogin").onsubmit = function (e) {
       e.preventDefault(); var b = $("#l-b"); b.disabled = true; b.textContent = "Ingresando…";
       jsonp({ accion: "login", usuario: $("#l-u").value.trim().toLowerCase(), pin: $("#l-p").value.trim() })
@@ -154,74 +176,58 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
     };
   }
   function hace(ms) { var s = Math.round(ms / 1000); return s < 60 ? "hace " + s + " s" : "hace " + Math.round(s / 60) + " min"; }
-  function tarjetaRecorrido() {
-    var st, sub;
-    if (activo) {
-      st = '<span class="on"><span class="dot"></span>Compartiendo tu ubicación</span>';
-      sub = geoErr ? '<span style="color:var(--accent)">' + esc(geoErr) + '</span>' :
-        (enviada.t ? 'Enviada ' + hace(Date.now() - enviada.t) + (ultimaPos ? ' · precisión ' + ultimaPos.acc + ' m' : '') : 'Buscando tu ubicación…');
-    } else { st = '<span><span class="dot"></span>Ubicación apagada</span>'; sub = 'El equipo no ve dónde estás.'; }
-    return '<section class="card"><div class="hero"><img src="moto.webp" alt=""><div class="st"><b id="r-st">' + st + '</b><span id="r-sub">' + sub + '</span></div></div>' +
-      (activo ? (trk && trk.traccar != null && trk.traccar < 600 ? '' : '<div class="aviso">Deja esta pantalla abierta mientras haces los domicilios, o configura abajo la ubicación con el celular bloqueado.</div>') +
-        '<button class="btn big" data-a="terminar">Terminar recorrido</button>'
-      : '<button class="btn primary big" data-a="iniciar">Iniciar recorrido</button>') + '</section>';
+  function textoGps() {
+    var fondo = trk && trk.traccar != null && trk.traccar < 600;
+    if (!activo) return fondo ? "Llega por Traccar · " + hace(trk.traccar * 1000) : "El equipo no ve dónde estás";
+    if (geoErr) return geoErr;
+    return enviada.t ? "Enviada " + hace(Date.now() - enviada.t) + (ultimaPos ? " · ±" + ultimaPos.acc + " m" : "") : "Buscando señal…";
+  }
+  function barraGps() {
+    var fondo = trk && trk.traccar != null && trk.traccar < 600, on = activo || fondo;
+    return '<div class="gps ' + (on ? "on" : "") + '"><span class="dot"></span><div class="tx"><b>' + (on ? "Ubicación activa" : "Ubicación apagada") + '</b><small id="r-sub">' + esc(textoGps()) + '</small></div>' +
+      (activo ? '<button class="btn sm line" data-a="terminar">Terminar</button>' : '<button class="btn sm primary" data-a="iniciar">Iniciar</button>') + '</div>';
   }
   var trk = null, trkAbierto = false;
   function cargarRastreo() { api("rastreo").then(function (j) { trk = j; if (!confirmar) pintar(); }).catch(function () {}); }
-  function tarjetaFondo() {
-    var ok = trk && trk.traccar != null && trk.traccar < 600;
-    var est = !trk ? "" : ok ? '<span style="color:var(--ok);font-weight:700">✓ Funcionando · última ubicación ' + hace(trk.traccar * 1000) + '</span>'
-      : trk.traccar != null ? '<span style="color:var(--warn);font-weight:700">Sin datos hace ' + hace(trk.traccar * 1000).replace("hace ", "") + '. Revisa que Traccar esté encendido.</span>'
-      : '<span style="color:var(--muted)">Todavía no está configurado.</span>';
-    var tienda = esIOS ? "App Store" : "Play Store";
-    return '<section class="card"><button class="btn" data-a="trk" style="justify-content:space-between;border:0;padding:0;min-height:0;background:none"><b style="text-align:left">📍 Ubicación con el celular bloqueado</b><span>' + (trkAbierto ? "▲" : "▼") + '</span></button>' + est +
-      (trkAbierto && trk ? '<div style="font-size:.9rem;display:grid;gap:10px">' +
-        '<span>Con la app gratuita <b>Traccar Client</b> tu ubicación sigue llegando aunque bloquees el celular o uses otras apps.</span>' +
-        '<ol style="margin:0;padding-left:20px;display:grid;gap:8px">' +
-        '<li>Instala <b>Traccar Client</b> desde la ' + tienda + '.</li>' +
-        '<li>En Traccar, en <b>Identificador del dispositivo</b> (Device identifier) pon:<div class="copia"><input readonly value="' + esc(trk.id) + '" id="trk-id"><button class="btn" data-a="copiar" data-v="trk-id">Copiar</button></div></li>' +
-        '<li>En <b>URL del servidor</b> (Server URL) pon:<div class="copia"><input readonly value="' + esc(trk.url) + '" id="trk-url"><button class="btn" data-a="copiar" data-v="trk-url">Copiar</button></div></li>' +
-        '<li>Precisión: <b>Alta</b> · Distancia: <b>30</b> · Intervalo: <b>30</b>.</li>' +
-        '<li>Activa el <b>seguimiento</b> (el interruptor de arriba) y permite la ubicación <b>' + (esIOS ? 'Siempre' : 'Permitir todo el tiempo') + '</b>.</li>' +
-        '<li>Al terminar el turno, apaga el seguimiento en Traccar.</li></ol>' +
-        '<button class="btn" data-a="trkRevisar">Revisar si ya llega</button></div>' : '') + '</section>';
-  }
-  function tarjetaAvisos() {
-    if (!("Notification" in window) || !("PushManager" in window) || Notification.permission !== "default") return "";
-    return '<section class="card" style="grid-template-columns:1fr auto;align-items:center"><span style="font-size:.9rem">Activa los avisos para saber cuándo hay pedidos listos.</span><button class="btn primary" data-a="avisos">Activar</button></section>';
+  function tarjetaMenu() {
+    var ok = trk && trk.traccar != null && trk.traccar < 600, tienda = esIOS ? "App Store" : "Play Store";
+    var avisos = ("Notification" in window) && ("PushManager" in window) && Notification.permission === "default";
+    return '<div class="menu">' +
+      (avisos ? '<button data-a="avisos">🔔 Activar avisos</button>' : '') +
+      (ses.yo.rol === "admin" ? '<a href="index.html?app" data-a="irApp">↩ App de pedidos</a>' : '') +
+      '<button data-a="salir" class="rojo">Cerrar sesión</button></div>';
   }
   function listaPedidos() {
     var ruta = pedidos.filter(function (p) { return p.estado === "ruta"; }),
-        listos = pedidos.filter(function (p) { return p.estado === "listo"; }),
-        prep = pedidos.filter(function (p) { return p.estado === "recibido" || p.estado === "preparacion"; });
+        salir = pedidos.filter(function (p) { return p.estado !== "ruta"; });
     var h = "";
-    if (ruta.length) h += "<h2>En ruta · " + ruta.length + "</h2>" + ruta.map(tarjetaPedido).join("");
-    if (listos.length) h += "<h2>Listos para salir · " + listos.length + "</h2>" + listos.map(tarjetaPedido).join("");
-    if (prep.length) h += "<h2>En preparación · " + prep.length + "</h2>" + prep.map(tarjetaPedido).join("");
-    if (!h) h = '<div class="card vacio">' + (cargando ? "Cargando pedidos…" : msgErr ? esc(msgErr) : "No hay domicilios pendientes por ahora.") + '</div>';
+    if (ruta.length) h += '<div class="sec">En camino</div>' + ruta.map(function (p, i) { return parada(p, i + 1); }).join("");
+    if (salir.length) h += '<div class="sec">Por salir</div>' + salir.map(function (p) { return parada(p, 0); }).join("");
+    if (!h) h = '<div class="vacio"><img src="moto.webp" alt=""><b>' + (cargando ? "Cargando…" : msgErr ? esc(msgErr) : "Sin entregas por ahora") + '</b>' +
+      (cargando || msgErr ? "" : '<span>Te avisamos cuando haya un domicilio listo.</span>') + '</div>';
     return h;
   }
-  function tarjetaPedido(p) {
-    var badge = { ruta: '<span class="badge ruta">En ruta' + (p.domiciliario ? ' · ' + esc(p.domiciliario.split(" ")[0]) : '') + '</span>', listo: '<span class="badge listo">Listo</span>' }[p.estado] || '<span class="badge">En preparación</span>';
+  function parada(p, n) {
     var dir = p.direccion ? 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(p.direccion + ", " + CIUDAD) : "";
     var tel = String(p.telefono || "").replace(/[^\d+]/g, "");
-    var acc;
-    if (p.estado === "ruta") acc = confirmar === p.id
-      ? '<button class="btn ok big" data-a="entregar" data-id="' + p.id + '">Sí, ya lo entregué</button><button class="btn ghost" data-a="noConfirmar">Cancelar</button>'
-      : '<button class="btn ok big" data-a="preEntregar" data-id="' + p.id + '">✓ Entregado</button><button class="btn ghost" data-a="devolver" data-id="' + p.id + '">Devolver al local</button>';
-    else acc = '<button class="btn primary big" data-a="salirEntregar" data-id="' + p.id + '">Salir a entregar</button>';
-    return '<article class="card ped"><div class="top"><b>#' + esc(p.numero) + ' · ' + esc(p.cliente) + '</b>' + badge + '</div>' +
-      '<div class="meta">' + (p.hora ? '<span>🕐 ' + esc(p.hora) + '</span>' : '') + (p.direccion ? '<span>📍 ' + esc(p.direccion) + '</span>' : '<span>📍 Sin dirección</span>') + '</div>' +
-      (p.items ? '<div class="items">' + esc(p.items) + '</div>' : '') + (p.notas ? '<div class="notas">' + esc(p.notas) + '</div>' : '') +
-      '<div class="pago">Pago: ' + esc(p.formaPago || "—") + ' · ' + (p.pagado ? '<b>Ya pagó</b>' : '<b class="no">Cobrar al entregar</b>') + '</div>' +
-      '<div class="row">' + (dir ? '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">🧭 Cómo llegar</a>' : '') + (tel ? '<a class="btn" href="tel:' + esc(tel) + '">📞 Llamar</a>' : '') + '</div>' +
-      acc + '</article>';
+    var enRuta = p.estado === "ruta";
+    var sub = [esc(p.cliente || "Sin nombre")];
+    if (p.hora) sub.push(esc(p.hora));
+    var tags = (p.pagado ? '' : '<span class="tag">Cobrar' + (p.formaPago && p.formaPago !== "Efectivo" ? " · " + esc(p.formaPago) : "") + '</span>') +
+      (!enRuta && p.estado !== "listo" ? '<span class="tag gris">Alistando</span>' : '');
+    var acts = '<div class="acts">' + (tel ? '<a class="ic" href="tel:' + esc(tel) + '" aria-label="Llamar">' + IC.tel + '</a>' : '') +
+      (dir && enRuta ? '<a class="ic go" href="' + dir + '" target="_blank" rel="noopener" aria-label="Cómo llegar">' + IC.ir + '</a>' : '') + '</div>';
+    var pie;
+    if (enRuta) pie = confirmar === p.id
+      ? '<div class="fila"><button class="btn ok" data-a="entregar" data-id="' + p.id + '">Sí, entregado</button><button class="btn line" data-a="noConfirmar">Cancelar</button></div>' +
+        '<button class="btn ghost sm" data-a="devolver" data-id="' + p.id + '">No se pudo entregar · volver al local</button>'
+      : '<button class="btn ok full" data-a="preEntregar" data-id="' + p.id + '">Entregado</button>';
+    else pie = '<button class="btn suave full" data-a="salirEntregar" data-id="' + p.id + '">Salir a entregar</button>';
+    return '<article class="stop ' + (enRuta ? "ruta" : "") + '"><span class="n">' + (n || "•") + '</span>' +
+      '<div class="info"><span class="dir">' + (p.direccion ? esc(p.direccion) : "Sin dirección") + '</span><span class="sub">' + sub.join(" · ") + tags + '</span></div>' +
+      acts + '<div class="pie">' + pie + '</div></article>';
   }
-  function refrescarEstado() {
-    var st = $("#r-st"), sub = $("#r-sub"); if (!st || !activo) return;
-    sub.innerHTML = geoErr ? '<span style="color:var(--accent)">' + esc(geoErr) + '</span>' :
-      (enviada.t ? 'Enviada ' + hace(Date.now() - enviada.t) + (ultimaPos ? ' · precisión ' + ultimaPos.acc + ' m' : '') : 'Buscando tu ubicación…');
-  }
+  function refrescarEstado() { var sub = $("#r-sub"); if (sub) sub.textContent = textoGps(); }
 
   /* ---------- pedidos ---------- */
   function cargarPedidos() {
@@ -315,6 +321,7 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
     else if (a === "noConfirmar") { confirmar = null; pintar(); }
     else if (a === "entregar") cambiar(id, "entregado", b);
     else if (a === "devolver") cambiar(id, "listo", b);
+    else if (a === "menu") { menuAbierto = !menuAbierto; pintar(); if (menuAbierto) window.scrollTo(0, 0); }
     else if (a === "trk") { trkAbierto = !trkAbierto; pintar(); }
     else if (a === "trkRevisar") { toast("Revisando…"); cargarRastreo(); }
     else if (a === "copiar") { var inp = document.getElementById(b.getAttribute("data-v")); inp.select(); try { navigator.clipboard.writeText(inp.value).then(function () { toast("Copiado"); }, function () { document.execCommand("copy"); toast("Copiado"); }); } catch (x) { document.execCommand("copy"); toast("Copiado"); } }
