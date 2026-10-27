@@ -80,7 +80,12 @@
     document.getElementById("p-no").onclick = onNo;
   }
 
-  if ((esIOS || esSafari) && !instalada && !directo) {
+  // El domiciliario que ya ingresó a su modo abre directo su pantalla.
+  var modoRuta = false; try { modoRuta = localStorage.getItem("ermita-modo") === "ruta" && location.search.indexOf("app") < 0; } catch (e) {}
+  if (location.search.indexOf("app") >= 0) { try { localStorage.removeItem("ermita-modo"); } catch (e) {} }
+  if (modoRuta) {
+    location.replace("ruta.html");
+  } else if ((esIOS || esSafari) && !instalada && !directo) {
     // iPhone en Safari: pantalla de bienvenida para poder instalar con el logo antes de abrir.
     splash.innerHTML =
       '<div style="text-align:center;padding:24px;max-width:340px">' +

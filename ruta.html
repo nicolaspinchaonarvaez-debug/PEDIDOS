@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Domicilios · La Ermita</title>
+<meta name="theme-color" content="#B3161E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pedidos Ermita">
+<style>
+:root{--bg:#F4F2F2;--surface:#fff;--ink:#1F1A1B;--muted:#6E6466;--line:#E2DCDC;--accent:#B3161E;--accent-d:#8E1B26;--soft:#F6E3E4;--ok:#1E7A46;--ok-bg:#E3F3E9;--ruta:#7A4A0E;--ruta-bg:#FDF0DC;--warn:#8A5A00}
+@media (prefers-color-scheme:dark){:root{--bg:#141112;--surface:#1F1B1C;--ink:#F2ECEC;--muted:#A99EA0;--line:#352E30;--soft:#3A1E21;--ok:#6FD39A;--ok-bg:#16301F;--ruta:#F2C27A;--ruta-bg:#3A2A12;--warn:#F2C27A}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:10px}
+header img{width:40px;height:40px;object-fit:contain}
+header .t{flex:1;min-width:0}
+header b{display:block;font-size:1.05rem}
+header span{display:block;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{max-width:560px;margin:0 auto;padding:14px 16px;display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px;min-width:0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 .95rem system-ui,-apple-system,sans-serif;padding:11px 14px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.big{width:100%;font-size:1.05rem;padding:15px;border-radius:14px}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn:disabled{opacity:.6}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row .btn{flex:1}
+.copia{display:flex;gap:8px;margin-top:6px;flex-wrap:nowrap}
+.copia input{flex:1;min-width:0;font-size:14px;padding:10px}
+.copia .btn{flex:none}
+label.f{display:grid;gap:6px;font-size:.85rem;font-weight:600;color:var(--muted)}
+input{font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%}
+.login{max-width:380px;margin:8vh auto 0;text-align:center}
+.login img.m{width:220px;max-width:70%;margin:0 auto}
+.err{color:var(--accent);font-weight:600;font-size:.9rem;min-height:1.2em}
+.hero{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.hero img{width:96px}
+.hero .st b{display:block;font-size:1.1rem}
+.hero .st>span{display:block;font-size:.85rem;color:var(--muted)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#aaa;margin-right:6px;vertical-align:1px}
+.on .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(30,122,70,.6);animation:pulso 1.6s infinite}
+@keyframes pulso{70%{box-shadow:0 0 0 10px rgba(30,122,70,0)}100%{box-shadow:0 0 0 0 rgba(30,122,70,0)}}
+.aviso{font-size:.82rem;color:var(--warn);background:var(--ruta-bg);border-radius:10px;padding:8px 10px}
+h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ped{gap:8px}
+.ped .top{display:flex;align-items:flex-start;gap:8px}
+.ped .top b{flex:1;font-size:1.05rem}
+.badge{font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--line);color:var(--muted);white-space:nowrap}
+.badge.ruta{background:var(--ruta-bg);color:var(--ruta)}
+.badge.listo{background:var(--ok-bg);color:var(--ok)}
+.meta{font-size:.9rem;display:grid;gap:3px}
+.items{white-space:pre-line;font-size:.9rem;background:var(--bg);border-radius:10px;padding:8px 10px}
+.notas{white-space:pre-line;font-size:.88rem;border-left:3px solid var(--accent);padding:4px 10px;background:var(--soft);border-radius:0 8px 8px 0}
+.pago{font-size:.85rem;color:var(--muted)}
+.pago b.no{color:var(--accent)}
+.vacio{text-align:center;color:var(--muted);padding:20px 10px}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:#1F1A1B;color:#fff;padding:12px 14px;border-radius:12px;font-size:.92rem;text-align:center;z-index:20;max-width:520px;margin:0 auto}
+.mini{font-size:.8rem;color:var(--muted);text-align:center}
+.mini a{color:inherit}
+</style>
+</head>
+<body>
+<div id="raiz"></div>
+<div id="toast" class="toast" hidden></div>
+<script>
+  // Enlace de la aplicación web de Apps Script (el mismo de index.html)
+  var EXEC = "https://script.google.com/macros/s/AKfycbx9whr0i8j4DMhuGydpvtXli5lIWxiq545MBosLZ5Tr4EsHHAPrQKnhrYA3pmC6XFCC/exec";
+  var VAPID = "BAyxDJpOMglZAyqAakLi8wYy9LiTFz0OUg3iMfm8_f5n0RQj_Hz531oPTrzjPy3Aa-tQLIwOhv1Z1VhoMZmkaaY";
+  var CIUDAD = "Pasto, Nariño, Colombia";
+</script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+             set: function (k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} } };
+  var ses = null; try { ses = JSON.parse(ls.get("ermita-ruta") || "null"); } catch (e) {}
+  var pedidos = [], cargando = false, msgErr = "", confirmar = null;
+  var activo = ls.get("ermita-ruta-activo") === "1", watchId = null, ultimaPos = null, enviada = { t: 0, lat: 0, lng: 0 }, enviando = false, geoErr = "", wake = null;
+  var esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var regP = ("serviceWorker" in navigator) ? navigator.serviceWorker.register("sw.js").then(function () { return navigator.serviceWorker.ready; }) : Promise.reject("sin sw");
+  regP.catch(function () {});
+
+  function toast(t) { var e = $("#toast"); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { e.hidden = true; }, 3500); }
+  function api(accion, datos) {
+    var cuerpo = Object.assign({ accion: accion, token: ses && ses.token }, datos || {});
+    return fetch(EXEC, { method: "POST", body: JSON.stringify(cuerpo) }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.error) {
+        if (/SESION_INVALIDA/.test(j.error) && accion !== "login") salir(true);
+        throw new Error(j.error);
+      }
+      return j;
+    });
+  }
+  var ERR = { CREDENCIALES: "Usuario o PIN incorrecto.", BLOQUEADO: "Demasiados intentos. Espera 10 minutos.", NO_DOMICILIARIO: "Este usuario no es domiciliario. Pídele al administrador que le cambie el rol." };
+  function errTxt(e) { var m = String(e && e.message || e); for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k]; return /Failed to fetch|NetworkError|Load failed/i.test(m) ? "Sin conexión. Revisa los datos o el wifi." : "No se pudo completar (" + m.slice(0, 80) + ")."; }
+
+  /* ---------- pantallas ---------- */
+  function pintar() {
+    if (!ses) return pintarLogin();
+    var r = $("#raiz"), y = window.scrollY;
+    r.innerHTML = '<header><img src="icon-192.png" alt=""><div class="t"><b>Domicilios</b><span>' + esc(ses.yo.nombre) + ' · Carnes La Ermita</span></div>' +
+      '<button class="btn ghost" data-a="salir">Salir</button></header><main>' + tarjetaRecorrido() + tarjetaFondo() + tarjetaAvisos() + listaPedidos() +
+      (ses.yo.rol === "admin" ? '<p class="mini"><a href="index.html?app" data-a="irApp">Ir a la app de pedidos</a></p>' : '') + '</main>';
+    window.scrollTo(0, y);
+  }
+  function pintarLogin(msg) {
+    $("#raiz").innerHTML = '<main><div class="card login"><img class="m" src="moto.webp" alt="Domiciliario de Carnes La Ermita">' +
+      '<b style="font-size:1.25rem">Modo domiciliario</b><span style="color:var(--muted);font-size:.9rem">Ingresa con tu usuario de domiciliario</span>' +
+      '<form id="flogin" class="card" style="border:0;padding:0;text-align:left">' +
+      '<label class="f">Usuario<input id="l-u" autocomplete="username" autocapitalize="none" required></label>' +
+      '<label class="f">PIN<input id="l-p" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" required></label>' +
+      '<div class="err" id="l-e">' + esc(msg || "") + '</div><button class="btn primary big" id="l-b">Ingresar</button></form></div>' +
+      '<p class="mini"><a href="index.html?app">Volver a la app de pedidos</a></p></main>';
+    $("#flogin").onsubmit = function (e) {
+      e.preventDefault(); var b = $("#l-b"); b.disabled = true; b.textContent = "Ingresando…";
+      fetch(EXEC, { method: "POST", body: JSON.stringify({ accion: "login", usuario: $("#l-u").value.trim().toLowerCase(), pin: $("#l-p").value.trim() }) })
+        .then(function (r) { return r.json(); }).then(function (j) {
+          if (j.error) throw new Error(j.error);
+          ses = { token: j.token, yo: j.yo }; ls.set("ermita-ruta", JSON.stringify(ses)); ls.set("ermita-modo", "ruta");
+          pintar(); cargarPedidos(); cargarRastreo(); revisarAvisos(); if (activo) iniciar();
+        }).catch(function (err) { $("#l-e").textContent = errTxt(err); b.disabled = false; b.textContent = "Ingresar"; });
+    };
+  }
+  function hace(ms) { var s = Math.round(ms / 1000); return s < 60 ? "hace " + s + " s" : "hace " + Math.round(s / 60) + " min"; }
+  function tarjetaRecorrido() {
+    var st, sub;
+    if (activo) {
+      st = '<span class="on"><span class="dot"></span>Compartiendo tu ubicación</span>';
+      sub = geoErr ? '<span style="color:var(--accent)">' + esc(geoErr) + '</span>' :
+        (enviada.t ? 'Enviada ' + hace(Date.now() - enviada.t) + (ultimaPos ? ' · precisión ' + ultimaPos.acc + ' m' : '') : 'Buscando tu ubicación…');
+    } else { st = '<span><span class="dot"></span>Ubicación apagada</span>'; sub = 'El equipo no ve dónde estás.'; }
+    return '<section class="card"><div class="hero"><img src="moto.webp" alt=""><div class="st"><b id="r-st">' + st + '</b><span id="r-sub">' + sub + '</span></div></div>' +
+      (activo ? (trk && trk.traccar != null && trk.traccar < 600 ? '' : '<div class="aviso">Deja esta pantalla abierta mientras haces los domicilios, o configura abajo la ubicación con el celular bloqueado.</div>') +
+        '<button class="btn big" data-a="terminar">Terminar recorrido</button>'
+      : '<button class="btn primary big" data-a="iniciar">Iniciar recorrido</button>') + '</section>';
+  }
+  var trk = null, trkAbierto = false;
+  function cargarRastreo() { api("rastreo").then(function (j) { trk = j; if (!confirmar) pintar(); }).catch(function () {}); }
+  function tarjetaFondo() {
+    var ok = trk && trk.traccar != null && trk.traccar < 600;
+    var est = !trk ? "" : ok ? '<span style="color:var(--ok);font-weight:700">✓ Funcionando · última ubicación ' + hace(trk.traccar * 1000) + '</span>'
+      : trk.traccar != null ? '<span style="color:var(--warn);font-weight:700">Sin datos hace ' + hace(trk.traccar * 1000).replace("hace ", "") + '. Revisa que Traccar esté encendido.</span>'
+      : '<span style="color:var(--muted)">Todavía no está configurado.</span>';
+    var tienda = esIOS ? "App Store" : "Play Store";
+    return '<section class="card"><button class="btn" data-a="trk" style="justify-content:space-between;border:0;padding:0;min-height:0;background:none"><b style="text-align:left">📍 Ubicación con el celular bloqueado</b><span>' + (trkAbierto ? "▲" : "▼") + '</span></button>' + est +
+      (trkAbierto && trk ? '<div style="font-size:.9rem;display:grid;gap:10px">' +
+        '<span>Con la app gratuita <b>Traccar Client</b> tu ubicación sigue llegando aunque bloquees el celular o uses otras apps.</span>' +
+        '<ol style="margin:0;padding-left:20px;display:grid;gap:8px">' +
+        '<li>Instala <b>Traccar Client</b> desde la ' + tienda + '.</li>' +
+        '<li>En Traccar, en <b>Identificador del dispositivo</b> (Device identifier) pon:<div class="copia"><input readonly value="' + esc(trk.id) + '" id="trk-id"><button class="btn" data-a="copiar" data-v="trk-id">Copiar</button></div></li>' +
+        '<li>En <b>URL del servidor</b> (Server URL) pon:<div class="copia"><input readonly value="' + esc(trk.url) + '" id="trk-url"><button class="btn" data-a="copiar" data-v="trk-url">Copiar</button></div></li>' +
+        '<li>Precisión: <b>Alta</b> · Distancia: <b>30</b> · Intervalo: <b>30</b>.</li>' +
+        '<li>Activa el <b>seguimiento</b> (el interruptor de arriba) y permite la ubicación <b>' + (esIOS ? 'Siempre' : 'Permitir todo el tiempo') + '</b>.</li>' +
+        '<li>Al terminar el turno, apaga el seguimiento en Traccar.</li></ol>' +
+        '<button class="btn" data-a="trkRevisar">Revisar si ya llega</button></div>' : '') + '</section>';
+  }
+  function tarjetaAvisos() {
+    if (!("Notification" in window) || !("PushManager" in window) || Notification.permission !== "default") return "";
+    return '<section class="card" style="grid-template-columns:1fr auto;align-items:center"><span style="font-size:.9rem">Activa los avisos para saber cuándo hay pedidos listos.</span><button class="btn primary" data-a="avisos">Activar</button></section>';
+  }
+  function listaPedidos() {
+    var ruta = pedidos.filter(function (p) { return p.estado === "ruta"; }),
+        listos = pedidos.filter(function (p) { return p.estado === "listo"; }),
+        prep = pedidos.filter(function (p) { return p.estado === "recibido" || p.estado === "preparacion"; });
+    var h = "";
+    if (ruta.length) h += "<h2>En ruta · " + ruta.length + "</h2>" + ruta.map(tarjetaPedido).join("");
+    if (listos.length) h += "<h2>Listos para salir · " + listos.length + "</h2>" + listos.map(tarjetaPedido).join("");
+    if (prep.length) h += "<h2>En preparación · " + prep.length + "</h2>" + prep.map(tarjetaPedido).join("");
+    if (!h) h = '<div class="card vacio">' + (cargando ? "Cargando pedidos…" : msgErr ? esc(msgErr) : "No hay domicilios pendientes por ahora.") + '</div>';
+    return h;
+  }
+  function tarjetaPedido(p) {
+    var badge = { ruta: '<span class="badge ruta">En ruta' + (p.domiciliario ? ' · ' + esc(p.domiciliario.split(" ")[0]) : '') + '</span>', listo: '<span class="badge listo">Listo</span>' }[p.estado] || '<span class="badge">En preparación</span>';
+    var dir = p.direccion ? 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(p.direccion + ", " + CIUDAD) : "";
+    var tel = String(p.telefono || "").replace(/[^\d+]/g, "");
+    var acc;
+    if (p.estado === "ruta") acc = confirmar === p.id
+      ? '<button class="btn ok big" data-a="entregar" data-id="' + p.id + '">Sí, ya lo entregué</button><button class="btn ghost" data-a="noConfirmar">Cancelar</button>'
+      : '<button class="btn ok big" data-a="preEntregar" data-id="' + p.id + '">✓ Entregado</button><button class="btn ghost" data-a="devolver" data-id="' + p.id + '">Devolver al local</button>';
+    else acc = '<button class="btn primary big" data-a="salirEntregar" data-id="' + p.id + '">Salir a entregar</button>';
+    return '<article class="card ped"><div class="top"><b>#' + esc(p.numero) + ' · ' + esc(p.cliente) + '</b>' + badge + '</div>' +
+      '<div class="meta">' + (p.hora ? '<span>🕐 ' + esc(p.hora) + '</span>' : '') + (p.direccion ? '<span>📍 ' + esc(p.direccion) + '</span>' : '<span>📍 Sin dirección</span>') + '</div>' +
+      (p.items ? '<div class="items">' + esc(p.items) + '</div>' : '') + (p.notas ? '<div class="notas">' + esc(p.notas) + '</div>' : '') +
+      '<div class="pago">Pago: ' + esc(p.formaPago || "—") + ' · ' + (p.pagado ? '<b>Ya pagó</b>' : '<b class="no">Cobrar al entregar</b>') + '</div>' +
+      '<div class="row">' + (dir ? '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">🧭 Cómo llegar</a>' : '') + (tel ? '<a class="btn" href="tel:' + esc(tel) + '">📞 Llamar</a>' : '') + '</div>' +
+      acc + '</article>';
+  }
+  function refrescarEstado() {
+    var st = $("#r-st"), sub = $("#r-sub"); if (!st || !activo) return;
+    sub.innerHTML = geoErr ? '<span style="color:var(--accent)">' + esc(geoErr) + '</span>' :
+      (enviada.t ? 'Enviada ' + hace(Date.now() - enviada.t) + (ultimaPos ? ' · precisión ' + ultimaPos.acc + ' m' : '') : 'Buscando tu ubicación…');
+  }
+
+  /* ---------- pedidos ---------- */
+  function cargarPedidos() {
+    if (!ses) return; cargando = !pedidos.length;
+    api("pedidos").then(function (j) { pedidos = j.pedidos || []; msgErr = ""; cargando = false; if (!confirmar) pintar(); })
+      .catch(function (e) { cargando = false; msgErr = errTxt(e); if (!pedidos.length) pintar(); });
+  }
+  function cambiar(id, estado, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = "Guardando…"; }
+    confirmar = null;
+    return api("estado", { id: id, estado: estado }).then(function (j) {
+      pedidos = j.pedidos || pedidos;
+      toast(estado === "ruta" ? "Saliste con el pedido. El equipo ya lo sabe." : estado === "entregado" ? "¡Entregado! Buen trabajo." : "Pedido devuelto al local.");
+      if (estado === "entregado" && activo && !pedidos.some(function (p) { return p.estado === "ruta"; }))
+        setTimeout(function () { toast("No te quedan pedidos en ruta. Si terminaste, toca Terminar recorrido."); }, 3600);
+      pintar();
+    }).catch(function (e) { toast(errTxt(e)); pintar(); });
+  }
+
+  /* ---------- ubicación ---------- */
+  function dist(a, b) { var R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
+    var h = Math.sin(dLa / 2) * Math.sin(dLa / 2) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) * Math.sin(dLo / 2); return 2 * R * Math.asin(Math.sqrt(h)); }
+  function rumbo(a, b) { var r = Math.PI / 180, y = Math.sin((b.lng - a.lng) * r) * Math.cos(b.lat * r),
+    x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lng - a.lng) * r); return (Math.atan2(y, x) / r + 360) % 360; }
+  function enviar(forzar) {
+    if (!ses || !ultimaPos || enviando) return;
+    var ahora = Date.now(), lejos = enviada.t ? dist(enviada, ultimaPos) : 1e9;
+    if (!forzar && ahora - enviada.t < 15000 && !(lejos > 30 && ahora - enviada.t > 5000)) return;
+    enviando = true;
+    var pos = { lat: ultimaPos.lat, lng: ultimaPos.lng, acc: ultimaPos.acc, rumbo: ultimaPos.rumbo, vel: ultimaPos.vel };
+    api("ubicacion", { pos: pos, activo: true }).then(function () { enviada = { t: Date.now(), lat: pos.lat, lng: pos.lng }; geoErr = ""; })
+      .catch(function (e) { if (!/SESION/.test(String(e))) geoErr = "No se pudo enviar: " + errTxt(e); })
+      .then(function () { enviando = false; refrescarEstado(); });
+  }
+  function bienPos(p) {
+    var c = p.coords, n = { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy || 0), vel: c.speed, rumbo: c.heading };
+    if ((n.rumbo == null || isNaN(n.rumbo)) && ultimaPos) { n.rumbo = dist(ultimaPos, n) > 8 ? rumbo(ultimaPos, n) : ultimaPos.rumbo; }
+    ultimaPos = n; geoErr = ""; enviar(false); refrescarEstado();
+  }
+  function malPos(e) {
+    geoErr = e.code === 1 ? (esIOS ? "Permite la ubicación: Ajustes → Privacidad → Localización → Safari (o la app) → Mientras se usa." : "Permite la ubicación para esta app en los ajustes del celular.")
+      : e.code === 3 ? "Buscando señal de GPS…" : "No se pudo obtener la ubicación.";
+    refrescarEstado();
+  }
+  function pedirPantalla() {
+    if (!activo || !("wakeLock" in navigator) || document.hidden) return;
+    navigator.wakeLock.request("screen").then(function (w) { wake = w; }).catch(function () {});
+  }
+  function iniciar() {
+    if (!("geolocation" in navigator)) { toast("Este celular no permite compartir la ubicación."); return; }
+    activo = true; ls.set("ermita-ruta-activo", "1");
+    if (watchId == null) watchId = navigator.geolocation.watchPosition(bienPos, malPos, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+    pedirPantalla(); pintar();
+  }
+  function terminar() {
+    activo = false; ls.set("ermita-ruta-activo", null);
+    if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    if (wake) { try { wake.release(); } catch (e) {} wake = null; }
+    api("ubicacion", { pos: ultimaPos, activo: false }).catch(function () {});
+    enviada = { t: 0, lat: 0, lng: 0 }; pintar(); toast("Recorrido terminado.");
+  }
+  function salir(vencida) {
+    if (activo && !vencida) terminar();
+    if (!vencida && ses) fetch(EXEC, { method: "POST", body: JSON.stringify({ accion: "salir", token: ses.token }) }).catch(function () {});
+    ses = null; ls.set("ermita-ruta", null); ls.set("ermita-modo", null);
+    if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    activo = false; ls.set("ermita-ruta-activo", null);
+    pintarLogin(vencida ? "Tu sesión se cerró. Ingresa de nuevo." : "");
+  }
+
+  /* ---------- avisos ---------- */
+  function claveBytes() { var s = VAPID.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; var b = atob(s), o = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
+  function registrarSub(s) { return api("push", { sub: s.toJSON(), disp: esIOS ? "iPhone (domicilios)" : /Android/i.test(navigator.userAgent) ? "Android (domicilios)" : "Computador (domicilios)" }); }
+  function revisarAvisos() {
+    if (!ses || !("Notification" in window) || Notification.permission !== "granted") return;
+    regP.then(function (reg) { return reg.pushManager.getSubscription().then(function (s) { return s || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: claveBytes() }); }); })
+      .then(registrarSub).catch(function () {});
+  }
+
+  /* ---------- eventos ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-a]"); if (!b) return;
+    var a = b.getAttribute("data-a"), id = b.getAttribute("data-id");
+    if (a === "irApp") { ls.set("ermita-modo", null); return; }
+    e.preventDefault();
+    if (a === "iniciar") iniciar();
+    else if (a === "terminar") terminar();
+    else if (a === "salir") salir(false);
+    else if (a === "salirEntregar") { if (!activo) iniciar(); cambiar(id, "ruta", b); }
+    else if (a === "preEntregar") { confirmar = id; pintar(); setTimeout(function () { if (confirmar === id) { confirmar = null; pintar(); } }, 6000); }
+    else if (a === "noConfirmar") { confirmar = null; pintar(); }
+    else if (a === "entregar") cambiar(id, "entregado", b);
+    else if (a === "devolver") cambiar(id, "listo", b);
+    else if (a === "trk") { trkAbierto = !trkAbierto; pintar(); }
+    else if (a === "trkRevisar") { toast("Revisando…"); cargarRastreo(); }
+    else if (a === "copiar") { var inp = document.getElementById(b.getAttribute("data-v")); inp.select(); try { navigator.clipboard.writeText(inp.value).then(function () { toast("Copiado"); }, function () { document.execCommand("copy"); toast("Copiado"); }); } catch (x) { document.execCommand("copy"); toast("Copiado"); } }
+    else if (a === "avisos") {
+      b.disabled = true;
+      regP.then(function (reg) { return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: claveBytes() }); })
+        .then(registrarSub).then(function () { toast("Avisos activados ✓"); pintar(); })
+        .catch(function () { toast(Notification.permission === "denied" ? "Bloqueaste los avisos. Actívalos en los ajustes del celular." : "No se pudieron activar los avisos."); pintar(); });
+    }
+  });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) return;
+    pedirPantalla(); cargarPedidos(); cargarRastreo(); if (activo) enviar(true);
+  });
+  setInterval(function () { if (!document.hidden && ses) cargarPedidos(); }, 45000);
+  setInterval(function () { if (activo && !document.hidden) { if (Date.now() - enviada.t > 30000) enviar(true); refrescarEstado(); } }, 10000);
+
+  if (ses) { pintar(); cargarPedidos(); cargarRastreo(); revisarAvisos(); if (activo) iniciar(); } else pintarLogin();
+})();
+</script>
+</body>
+</html>
