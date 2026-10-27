@@ -89,9 +89,21 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
   regP.catch(function () {});
 
   function toast(t) { var e = $("#toast"); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { e.hidden = true; }, 3500); }
+  // Se habla con Google por JSONP (etiqueta <script>), que el iPhone no bloquea.
+  function jsonp(obj) {
+    return new Promise(function (res, rej) {
+      var cb = "rcb" + Date.now() + Math.floor(Math.random() * 1e6), s = document.createElement("script");
+      var fin = function () { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } s.remove(); };
+      var t = setTimeout(function () { fin(); rej(new Error("TIEMPO")); }, 30000);
+      window[cb] = function (j) { fin(); res(j); };
+      s.onerror = function () { fin(); rej(new Error("SIN_SERVIDOR")); };
+      s.src = EXEC + "?cb=" + cb + "&d=" + encodeURIComponent(JSON.stringify(obj)) + "&_=" + Date.now();
+      document.head.appendChild(s);
+    });
+  }
   function api(accion, datos) {
     var cuerpo = Object.assign({ accion: accion, token: ses && ses.token }, datos || {});
-    return fetch(EXEC, { method: "POST", body: JSON.stringify(cuerpo) }).then(function (r) { return r.json(); }).then(function (j) {
+    return jsonp(cuerpo).then(function (j) {
       if (j && j.error) {
         if (/SESION_INVALIDA/.test(j.error) && accion !== "login") salir(true);
         throw new Error(j.error);
@@ -100,7 +112,9 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
     });
   }
   var ERR = { CREDENCIALES: "Usuario o PIN incorrecto.", BLOQUEADO: "Demasiados intentos. Espera 10 minutos.", NO_DOMICILIARIO: "Este usuario no es domiciliario. Pídele al administrador que le cambie el rol." };
-  function errTxt(e) { var m = String(e && e.message || e); for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k]; return /Failed to fetch|NetworkError|Load failed/i.test(m) ? "Sin conexión. Revisa los datos o el wifi." : "No se pudo completar (" + m.slice(0, 80) + ")."; }
+  function errTxt(e) { var m = String(e && e.message || e); for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k]; if (/SIN_SERVIDOR|TIEMPO/.test(m)) return navigator.onLine === false ? "Sin conexión. Revisa los datos o el wifi." : "No se pudo conectar con el servidor de Google. Toca «Probar conexión» abajo.";
+    if (/ACCION_DESCONOCIDA|rutaApi_|doGet/.test(m)) return "Falta actualizar Código.gs y publicar una Nueva versión.";
+    return /Failed to fetch|NetworkError|Load failed/i.test(m) ? "Sin conexión. Revisa los datos o el wifi." : "No se pudo completar (" + m.slice(0, 80) + ")."; }
 
   /* ---------- pantallas ---------- */
   function pintar() {
@@ -118,11 +132,11 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
       '<label class="f">Usuario<input id="l-u" autocomplete="username" autocapitalize="none" required></label>' +
       '<label class="f">PIN<input id="l-p" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" required></label>' +
       '<div class="err" id="l-e">' + esc(msg || "") + '</div><button class="btn primary big" id="l-b">Ingresar</button></form></div>' +
-      '<p class="mini"><a href="index.html?app">Volver a la app de pedidos</a></p></main>';
+      '<p class="mini"><a href="' + EXEC + '?ping=1" target="_blank" rel="noopener">Probar conexión</a> · <a href="index.html?app">Volver a la app de pedidos</a></p></main>';
     $("#flogin").onsubmit = function (e) {
       e.preventDefault(); var b = $("#l-b"); b.disabled = true; b.textContent = "Ingresando…";
-      fetch(EXEC, { method: "POST", body: JSON.stringify({ accion: "login", usuario: $("#l-u").value.trim().toLowerCase(), pin: $("#l-p").value.trim() }) })
-        .then(function (r) { return r.json(); }).then(function (j) {
+      jsonp({ accion: "login", usuario: $("#l-u").value.trim().toLowerCase(), pin: $("#l-p").value.trim() })
+        .then(function (j) {
           if (j.error) throw new Error(j.error);
           ses = { token: j.token, yo: j.yo }; ls.set("ermita-ruta", JSON.stringify(ses)); ls.set("ermita-modo", "ruta");
           pintar(); cargarPedidos(); cargarRastreo(); revisarAvisos(); if (activo) iniciar();
@@ -261,7 +275,7 @@ h2{font-size:.95rem;margin:6px 2px 0;color:var(--muted);text-transform:uppercase
   }
   function salir(vencida) {
     if (activo && !vencida) terminar();
-    if (!vencida && ses) fetch(EXEC, { method: "POST", body: JSON.stringify({ accion: "salir", token: ses.token }) }).catch(function () {});
+    if (!vencida && ses) jsonp({ accion: "salir", token: ses.token }).catch(function () {});
     ses = null; ls.set("ermita-ruta", null); ls.set("ermita-modo", null);
     if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
     activo = false; ls.set("ermita-ruta-activo", null);

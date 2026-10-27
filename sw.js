@@ -1,6 +1,6 @@
 // Service worker de Pedidos La Ermita: permite instalar la app y muestra los avisos con el logo.
 // Los pedidos siempre se leen en vivo desde Google.
-const CACHE = "pedidos-ermita-v3";
+const CACHE = "pedidos-ermita-v4";
 const ARCHIVOS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "favicon.png", "badge-96.png", "ruta.html", "moto.webp"];
 
 self.addEventListener("install", e => {
