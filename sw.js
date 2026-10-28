@@ -1,6 +1,6 @@
 // Service worker de Pedidos La Ermita: permite instalar la app y muestra los avisos con el logo.
 // Los pedidos siempre se leen en vivo desde Google.
-const CACHE = "pedidos-ermita-v4";
+const CACHE = "pedidos-ermita-v5";
 const ARCHIVOS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "favicon.png", "badge-96.png", "ruta.html", "moto.webp"];
 
 self.addEventListener("install", e => {
@@ -12,7 +12,8 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== self.location.origin) return;
-  e.respondWith(fetch(e.request).then(r => {
+  // Siempre pide la versión más reciente a GitHub (sin usar la copia guardada del navegador).
+  e.respondWith(fetch(e.request, { cache: "no-cache" }).then(r => {
     const copia = r.clone();
     caches.open(CACHE).then(c => c.put(e.request, copia));
     return r;

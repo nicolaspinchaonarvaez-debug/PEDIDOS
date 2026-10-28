@@ -155,7 +155,7 @@ input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px
     r.innerHTML = '<header class="hd"><img src="icon-192.png" alt=""><div class="t"><b>Hola, ' + esc(ses.yo.nombre.split(" ")[0]) + '</b><span>' +
       (pend ? pend + (pend === 1 ? " entrega pendiente" : " entregas pendientes") : "Domicilios · Carnes La Ermita") + '</span></div>' +
       '<button class="ic" data-a="menu" aria-label="Opciones">' + IC.menu + '</button></header><main>' +
-      (menuAbierto ? tarjetaMenu() : '') + barraGps() + listaPedidos() + '</main>';
+      (menuAbierto ? tarjetaMenu() : '') + barraGps() + '<div id="pend" class="mini"' + (cola.length ? '' : ' hidden') + '>Enviando ' + cola.length + ' cambio' + (cola.length > 1 ? 's' : '') + '…</div>' + listaPedidos() + '</main>';
     window.scrollTo(0, y);
   }
   function pintarLogin(msg) {
@@ -230,22 +230,51 @@ input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px
   function refrescarEstado() { var sub = $("#r-sub"); if (sub) sub.textContent = textoGps(); }
 
   /* ---------- pedidos ---------- */
+  // La lista se guarda en el celular: al abrir se ve al instante y luego se actualiza.
+  try { pedidos = JSON.parse(ls.get("ermita-ruta-ped") || "[]") || []; } catch (e) { pedidos = []; }
+  var cola = []; try { cola = JSON.parse(ls.get("ermita-ruta-cola") || "[]") || []; } catch (e) { cola = []; }
+  var procesando = false;
+  function guardarLocal() { ls.set("ermita-ruta-ped", JSON.stringify(pedidos)); ls.set("ermita-ruta-cola", JSON.stringify(cola)); }
+  function aplicarCambio(lista, c) {
+    if (c.estado === "entregado") return lista.filter(function (p) { return p.id !== c.id; });
+    lista.forEach(function (p) { if (p.id === c.id) { p.estado = c.estado; if (c.estado === "ruta") p.domiciliario = ses && ses.yo.nombre; } });
+    return lista;
+  }
   function cargarPedidos() {
     if (!ses) return; cargando = !pedidos.length;
-    api("pedidos").then(function (j) { pedidos = j.pedidos || []; msgErr = ""; cargando = false; if (!confirmar) pintar(); })
-      .catch(function (e) { cargando = false; msgErr = errTxt(e); if (!pedidos.length) pintar(); });
+    api("pedidos").then(function (j) {
+      var lista = j.pedidos || [];
+      cola.forEach(function (c) { lista = aplicarCambio(lista, c); });   // lo que aún no llega al servidor
+      pedidos = lista; msgErr = ""; cargando = false; guardarLocal(); if (!confirmar) pintar();
+    }).catch(function (e) { cargando = false; msgErr = errTxt(e); if (!pedidos.length) pintar(); });
   }
-  function cambiar(id, estado, btn) {
-    if (btn) { btn.disabled = true; btn.textContent = "Guardando…"; }
+  // Cambia el pedido al instante en pantalla y lo envía en segundo plano (reintenta si no hay señal).
+  function cambiar(id, estado) {
     confirmar = null;
-    return api("estado", { id: id, estado: estado }).then(function (j) {
-      pedidos = j.pedidos || pedidos;
-      toast(estado === "ruta" ? "Saliste con el pedido. El equipo ya lo sabe." : estado === "entregado" ? "¡Entregado! Buen trabajo." : "Pedido devuelto al local.");
-      if (estado === "entregado" && activo && !pedidos.some(function (p) { return p.estado === "ruta"; }))
-        setTimeout(function () { toast("No te quedan pedidos en ruta. Si terminaste, toca Terminar recorrido."); }, 3600);
-      pintar();
-    }).catch(function (e) { toast(errTxt(e)); pintar(); });
+    pedidos = aplicarCambio(pedidos, { id: id, estado: estado });
+    cola.push({ id: id, estado: estado, t: Date.now() }); guardarLocal(); pintar();
+    toast(estado === "ruta" ? "Saliste con el pedido." : estado === "entregado" ? "¡Entregado! Buen trabajo." : "Pedido devuelto al local.");
+    if (estado === "entregado" && activo && !pedidos.some(function (p) { return p.estado === "ruta"; }))
+      setTimeout(function () { toast("No te quedan pedidos en ruta. Si terminaste, toca Terminar."); }, 3600);
+    procesarCola();
   }
+  function procesarCola() {
+    if (procesando || !cola.length || !ses) return;
+    procesando = true;
+    var c = cola[0];
+    api("estado", { id: c.id, estado: c.estado }).then(function () {
+      cola.shift(); guardarLocal();
+      api("avisarEstado", { id: c.id, estado: c.estado }).catch(function () {});   // avisos al equipo, sin esperar
+      procesando = false; pintarPendientes(); procesarCola();
+    }).catch(function (e) {
+      procesando = false;
+      var m = String(e && e.message || e);
+      if (/NO_EXISTE|DATOS_INVALIDOS/.test(m)) { cola.shift(); guardarLocal(); toast("Ese pedido ya no existe. Se actualizó la lista."); cargarPedidos(); procesarCola(); return; }
+      if (/SESION/.test(m)) return;
+      pintarPendientes(); setTimeout(procesarCola, 6000);   // sin señal: vuelve a intentar
+    });
+  }
+  function pintarPendientes() { var e = $("#pend"); if (e) { e.hidden = !cola.length; e.textContent = cola.length ? "Enviando " + cola.length + " cambio" + (cola.length > 1 ? "s" : "") + "…" : ""; } }
 
   /* ---------- ubicación ---------- */
   function dist(a, b) { var R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
@@ -292,7 +321,7 @@ input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px
   function salir(vencida) {
     if (activo && !vencida) terminar();
     if (!vencida && ses) jsonp({ accion: "salir", token: ses.token }).catch(function () {});
-    ses = null; ls.set("ermita-ruta", null); ls.set("ermita-modo", null);
+    ses = null; ls.set("ermita-ruta", null); ls.set("ermita-modo", null); pedidos = []; cola = []; ls.set("ermita-ruta-ped", null); ls.set("ermita-ruta-cola", null);
     if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
     activo = false; ls.set("ermita-ruta-activo", null);
     pintarLogin(vencida ? "Tu sesión se cerró. Ingresa de nuevo." : "");
@@ -316,11 +345,11 @@ input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px
     if (a === "iniciar") iniciar();
     else if (a === "terminar") terminar();
     else if (a === "salir") salir(false);
-    else if (a === "salirEntregar") { if (!activo) iniciar(); cambiar(id, "ruta", b); }
+    else if (a === "salirEntregar") { if (!activo) iniciar(); cambiar(id, "ruta"); }
     else if (a === "preEntregar") { confirmar = id; pintar(); setTimeout(function () { if (confirmar === id) { confirmar = null; pintar(); } }, 6000); }
     else if (a === "noConfirmar") { confirmar = null; pintar(); }
-    else if (a === "entregar") cambiar(id, "entregado", b);
-    else if (a === "devolver") cambiar(id, "listo", b);
+    else if (a === "entregar") cambiar(id, "entregado");
+    else if (a === "devolver") cambiar(id, "listo");
     else if (a === "menu") { menuAbierto = !menuAbierto; pintar(); if (menuAbierto) window.scrollTo(0, 0); }
     else if (a === "trk") { trkAbierto = !trkAbierto; pintar(); }
     else if (a === "trkRevisar") { toast("Revisando…"); cargarRastreo(); }
@@ -339,7 +368,8 @@ input.campo{font:inherit;font-size:16px;padding:14px;border:0;border-radius:14px
   setInterval(function () { if (!document.hidden && ses) cargarPedidos(); }, 45000);
   setInterval(function () { if (activo && !document.hidden) { if (Date.now() - enviada.t > 30000) enviar(true); refrescarEstado(); } }, 10000);
 
-  if (ses) { pintar(); cargarPedidos(); cargarRastreo(); revisarAvisos(); if (activo) iniciar(); } else pintarLogin();
+  window.addEventListener("online", procesarCola);
+  if (ses) { pintar(); cargarPedidos(); procesarCola(); cargarRastreo(); revisarAvisos(); if (activo) iniciar(); } else pintarLogin();
 })();
 </script>
 </body>
